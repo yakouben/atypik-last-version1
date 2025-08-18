@@ -32,10 +32,13 @@ export function useAuth() {
   // Optimized profile loading with caching
   const loadUserProfile = async (userId: string, forceRefresh = false) => {
     try {
+      console.log('🔄 useAuth - Loading profile for user:', userId);
+      
       // Check cache first (unless forcing refresh)
       if (!forceRefresh && profileCache.has(userId)) {
         const cachedProfile = profileCache.get(userId)
         if (cachedProfile) {
+          console.log('✅ useAuth - Using cached profile');
           setUserProfile(cachedProfile)
           return { data: cachedProfile, error: null }
         }
@@ -43,14 +46,17 @@ export function useAuth() {
 
       const { data: profile, error } = await getUserProfile(userId)
       if (profile) {
+        console.log('✅ useAuth - Profile loaded from database:', profile.user_type);
         // Cache the profile
         setProfileCache(prev => new Map(prev).set(userId, profile))
         setUserProfile(profile)
         return { data: profile, error: null }
       }
+      
+      console.error('❌ useAuth - No profile found for user:', userId);
       return { data: null, error }
     } catch (error) {
-      console.error('Error loading user profile:', error)
+      console.error('❌ useAuth - Error loading user profile:', error)
       return { data: null, error }
     }
   }
@@ -58,13 +64,17 @@ export function useAuth() {
   // Optimized profile creation/update
   const ensureUserProfile = async (user: User) => {
     try {
+      console.log('🔄 useAuth - Ensuring profile for user:', user.email);
+      
       // Try to get existing profile first
       const { data: existingProfile } = await getUserProfile(user.id)
       
       if (existingProfile) {
+        console.log('✅ useAuth - Existing profile found:', existingProfile.user_type);
         // Profile exists, update if needed
         const needsUpdate = !existingProfile.email && user.email
         if (needsUpdate) {
+          console.log('🔄 useAuth - Updating existing profile...');
           await updateProfileWithUserData(existingProfile.id, user)
           const { data: updatedProfile } = await getUserProfile(user.id)
           if (updatedProfile) {
@@ -77,9 +87,11 @@ export function useAuth() {
         setProfileCache(prev => new Map(prev).set(user.id, existingProfile))
         return existingProfile
       } else {
+        console.log('🔄 useAuth - Creating new profile for user...');
         // Create new profile
         const { data: newProfile } = await createDefaultProfile(user)
         if (newProfile) {
+          console.log('✅ useAuth - New profile created:', newProfile.user_type);
           setUserProfile(newProfile)
           setProfileCache(prev => new Map(prev).set(user.id, newProfile))
           return newProfile
@@ -87,7 +99,7 @@ export function useAuth() {
       }
       return null
     } catch (error) {
-      console.error('Error ensuring user profile:', error)
+      console.error('❌ useAuth - Error ensuring user profile:', error)
       return null
     }
   }

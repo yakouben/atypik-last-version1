@@ -54,6 +54,7 @@ export default function ClientDashboard() {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [filteredBookings, setFilteredBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>('dashboard');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -61,9 +62,23 @@ export default function ClientDashboard() {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const router = useRouter();
 
+  // Debug logging
+  useEffect(() => {
+    console.log('🔍 ClientDashboard - userProfile:', userProfile);
+    console.log('🔍 ClientDashboard - loading state:', loading);
+    console.log('🔍 ClientDashboard - error state:', error);
+  }, [userProfile, loading, error]);
+
   useEffect(() => {
     if (userProfile?.id) {
+      console.log('✅ UserProfile loaded, ID:', userProfile.id);
       loadClientData();
+    } else if (userProfile === null) {
+      console.log('❌ UserProfile is null - user might not be authenticated');
+      setError('Utilisateur non authentifié');
+      setLoading(false);
+    } else {
+      console.log('⏳ UserProfile still loading...');
     }
   }, [userProfile]);
 
@@ -72,21 +87,29 @@ export default function ClientDashboard() {
   }, [bookings, selectedStatus, searchQuery]);
 
   const loadClientData = async () => {
+    console.log('🚀 Starting to load client data for user:', userProfile!.id);
     setLoading(true);
+    setError(null);
+    
     try {
       // Use the new API route instead of direct Supabase query
       const response = await fetch(`/api/bookings/client?clientId=${userProfile!.id}`);
+      console.log('📡 API Response status:', response.status);
+      
       const result = await response.json();
+      console.log('📡 API Response data:', result);
       
       if (response.ok && result.data) {
         setBookings(result.data);
-        console.log('Bookings loaded successfully:', result.data);
+        console.log('✅ Bookings loaded successfully:', result.data);
       } else {
-        console.error('Error loading bookings:', result.error);
+        console.error('❌ Error loading bookings:', result.error);
+        setError(`Erreur lors du chargement des réservations: ${result.error}`);
         setBookings([]);
       }
     } catch (error) {
-      console.error('Error loading client data:', error);
+      console.error('❌ Exception loading client data:', error);
+      setError(`Erreur de connexion: ${error instanceof Error ? error.message : 'Erreur inconnue'}`);
       setBookings([]);
     } finally {
       setLoading(false);
@@ -223,6 +246,46 @@ export default function ClientDashboard() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Chargement...</p>
+          {userProfile ? (
+            <p className="mt-2 text-sm text-gray-500">
+              Chargement des données pour {userProfile.full_name}...
+            </p>
+          ) : (
+            <p className="mt-2 text-sm text-gray-500">
+              Chargement du profil utilisateur...
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto">
+          <div className="bg-red-100 rounded-full p-4 mx-auto w-16 h-16 flex items-center justify-center mb-4">
+            <XCircle className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Erreur de chargement</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <div className="space-y-2 text-sm text-gray-500">
+            <p>Profil utilisateur: {userProfile ? '✅ Chargé' : '❌ Non chargé'}</p>
+            <p>ID utilisateur: {userProfile?.id || 'Non disponible'}</p>
+            <p>Type utilisateur: {userProfile?.user_type || 'Non disponible'}</p>
+          </div>
+          <button
+            onClick={() => {
+              setError(null);
+              setLoading(true);
+              if (userProfile?.id) {
+                loadClientData();
+              }
+            }}
+            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            Réessayer
+          </button>
         </div>
       </div>
     );
@@ -247,6 +310,26 @@ export default function ClientDashboard() {
             </div>
           </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
+              {/* Debug Button - Only show in development */}
+              {process.env.NODE_ENV === 'development' && (
+                <button
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/debug-client');
+                      const result = await response.json();
+                      console.log('🔍 Debug Client Data:', result);
+                      alert('Debug data logged to console. Check browser console for details.');
+                    } catch (error) {
+                      console.error('Debug error:', error);
+                      alert('Debug failed. Check console for error.');
+                    }
+                  }}
+                  className="flex items-center space-x-2 bg-yellow-50 hover:bg-yellow-100 text-yellow-600 hover:text-yellow-700 px-3 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-sm border border-yellow-200 text-sm"
+                >
+                  <AlertCircle className="w-4 h-4" />
+                  <span>Debug</span>
+                </button>
+              )}
               <button 
                 onClick={handleSignOut}
                 className="flex items-center space-x-2 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 px-3 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-sm border border-red-200 text-sm"
