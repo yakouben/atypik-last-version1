@@ -27,6 +27,8 @@ import {
 } from 'lucide-react';
 import { useAuthContext } from './AuthProvider';
 import { useRouter } from 'next/navigation';
+import UserMenu from './UserMenu';
+import Breadcrumb, { generateBreadcrumbs } from '@/components/Breadcrumb';
 
 type TabType = 'dashboard' | 'properties' | 'bookings' | 'profile';
 
@@ -330,15 +332,16 @@ export default function ClientDashboard() {
                   <span>Debug</span>
                 </button>
               )}
-              <button 
-                onClick={handleSignOut}
-                className="flex items-center space-x-2 bg-red-50 hover:bg-red-100 text-red-600 hover:text-red-700 px-3 py-2 rounded-xl font-medium transition-all duration-300 hover:scale-105 shadow-sm border border-red-200 text-sm"
-              >
-                <LogOut className="w-4 h-4" />
-                <span>Déconnexion</span>
-            </button>
+              <UserMenu userName={userProfile?.full_name || 'Utilisateur'} />
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Breadcrumb Navigation */}
+      <div className="bg-gray-50 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <Breadcrumb items={generateBreadcrumbs('client-dashboard')} />
         </div>
       </div>
 

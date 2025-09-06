@@ -11,6 +11,13 @@ NEXT_PUBLIC_GA_ID=G-YRGKJZS78V
 # Site Configuration
 NEXT_PUBLIC_SITE_URL=http://localhost:3000
 
+# Google reCAPTCHA Configuration
+NEXT_PUBLIC_RECAPTCHA_SITE_KEY=6LcKILUrAAAAANVIqyzw9QvwVV2fRvosVSz6BA_k
+RECAPTCHA_SECRET_KEY=6LcKILUrAAAAABev6yhIRfzrSTRm5GWTU3xsWRgZ
+
+# Supabase Service Role Key (for admin operations like user deletion)
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+
 # Email Configuration (if using email services)
 # SMTP_HOST=your_smtp_host
 # SMTP_PORT=587

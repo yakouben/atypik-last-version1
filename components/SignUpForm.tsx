@@ -60,26 +60,26 @@ export default function SignUpForm() {
     setLoading(true);
 
     try {
-      console.log('Starting signup process...');
+      process.env.NODE_ENV === 'development' && console.log('Starting signup process...');
       const result = await signUp(userData.email, userData.password, {
         full_name: userData.full_name,
         user_type: userData.user_type
       });
 
-      console.log('Signup result:', result);
+      process.env.NODE_ENV === 'development' && console.log('Signup result:', result);
 
       if (result.error) {
-        console.error('Signup error:', result.error);
+        process.env.NODE_ENV === 'development' && console.error('Signup error:', result.error);
         setError(result.error.message || result.error);
       } else {
         // Success - user will be redirected after email confirmation
-        console.log('Account created successfully');
+        process.env.NODE_ENV === 'development' && console.log('Account created successfully');
         // Show success message
         setError(''); // Clear any previous errors
         // You could add a success state here
       }
     } catch (error) {
-      console.error('Signup exception:', error);
+      process.env.NODE_ENV === 'development' && console.error('Signup exception:', error);
       setError('Une erreur est survenue lors de la création du compte. Vérifiez votre connexion internet et réessayez.');
     } finally {
       setLoading(false);

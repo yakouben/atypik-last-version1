@@ -1,6 +1,7 @@
 "use client";
 
 import Link from 'next/link';
+import Breadcrumb, { generateBreadcrumbs } from '@/components/Breadcrumb';
 
 export default function CGUPage() {
   return (
@@ -25,6 +26,13 @@ export default function CGUPage() {
             </div>
             <div className="w-10"></div>
           </div>
+        </div>
+      </div>
+
+      {/* Breadcrumb Navigation */}
+      <div className="bg-gray-50 border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <Breadcrumb items={generateBreadcrumbs('cgu')} />
         </div>
       </div>
 
@@ -221,13 +229,21 @@ export default function CGUPage() {
         </div>
 
         {/* Back to Home Button */}
-        <div className="text-center mt-12">
-          <Link
-            href="/"
-            className="bg-[#4A7C59] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#2C3E37] transition-colors"
-          >
-            Retour à l'Accueil
-          </Link>
+        <div className="text-center mt-12 space-y-4">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/"
+              className="bg-[#4A7C59] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#2C3E37] transition-colors"
+            >
+              Retour à l'Accueil
+            </Link>
+            <Link
+              href="/cgv"
+              className="bg-gray-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors"
+            >
+              Voir les CGV
+            </Link>
+          </div>
         </div>
       </div>
     </div>

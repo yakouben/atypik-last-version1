@@ -99,11 +99,11 @@ export default function OwnerBookingsDashboard({ onBookingUpdate }: OwnerBooking
         setBookings(result.data);
         calculateStats(result.data);
       } else {
-        console.error('Error loading bookings:', result.error);
+        process.env.NODE_ENV === 'development' && console.error('Error loading bookings:', result.error);
         setBookings([]);
       }
     } catch (error) {
-      console.error('Error loading bookings:', error);
+      process.env.NODE_ENV === 'development' && console.error('Error loading bookings:', error);
       setBookings([]);
     } finally {
       setLoading(false);
@@ -180,11 +180,11 @@ export default function OwnerBookingsDashboard({ onBookingUpdate }: OwnerBooking
         }
       } else {
         const errorData = await response.json();
-        console.error('Error updating booking:', errorData);
+        process.env.NODE_ENV === 'development' && console.error('Error updating booking:', errorData);
         alert(`Erreur lors de la mise à jour: ${errorData.error || 'Erreur inconnue'}`);
       }
     } catch (error) {
-      console.error('Error updating booking status:', error);
+      process.env.NODE_ENV === 'development' && console.error('Error updating booking status:', error);
       alert('Erreur lors de la mise à jour du statut');
     } finally {
       setLoading(false);
@@ -221,11 +221,11 @@ export default function OwnerBookingsDashboard({ onBookingUpdate }: OwnerBooking
         }
       } else {
         const errorData = await response.json();
-        console.error('Error deleting booking:', errorData);
+        process.env.NODE_ENV === 'development' && console.error('Error deleting booking:', errorData);
         alert(`Erreur lors de la suppression: ${errorData.error || 'Erreur inconnue'}`);
       }
     } catch (error) {
-      console.error('Error deleting booking:', error);
+      process.env.NODE_ENV === 'development' && console.error('Error deleting booking:', error);
       alert('Erreur lors de la suppression de la réservation');
     } finally {
       setLoading(false);

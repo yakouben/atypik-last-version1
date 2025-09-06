@@ -1,17 +1,22 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
+import CookieSettings from '@/components/CookieSettings';
+import ReCaptchaModal from '@/components/ReCaptchaModal';
 import { useAuthContext } from '@/components/AuthProvider';
 import HeroSection from '@/components/HeroSection';
-import { Mountain, TreePine, Castle, Caravan, Home as HomeIcon, Star, MapPin, Users, Euro, Shield, Heart, Zap, Globe, Building, Hotel, ArrowRight, Eye } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import Breadcrumb, { generateBreadcrumbs } from '@/components/Breadcrumb';
+import { Mountain, TreePine, Castle, Caravan, Home as HomeIcon, Star, MapPin, Users, Euro, Shield, Heart, Zap, Globe, Building, Hotel, ArrowRight, Eye, Facebook, Instagram } from 'lucide-react';
 
 export default function Home() {
   const { user, userProfile, loading } = useAuthContext();
   const router = useRouter();
   const [scrollY, setScrollY] = useState(0);
   const [activeFeature, setActiveFeature] = useState(0);
+  const [showCookieSettings, setShowCookieSettings] = useState(false);
+  const [showReCaptchaModal, setShowReCaptchaModal] = useState(false);
 
   // Scroll effect for progressive reveal
   useEffect(() => {
@@ -206,6 +211,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
+      {/* Hidden H1 for SEO */}
+      <h1 className="sr-only">AtypikHouse - Hébergements insolites et expériences uniques en Europe</h1>
+      
+      {/* Main Content Area */}
+      <main id="main-content">
+      
       {/* Hero Section */}
       <HeroSection 
         onReserverClick={handleReserverClick}
@@ -213,6 +224,11 @@ export default function Home() {
         onConnexionClick={handleConnexionClick}
         onInscriptionClick={handleInscriptionClick}
       />
+
+      {/* Breadcrumb Navigation */}
+      <div className="container mx-auto px-4 py-4">
+        <Breadcrumb items={generateBreadcrumbs('home')} />
+      </div>
 
       {/* Featured Properties Section - Modern Horizontal Navbar */}
       <section className="py-16 sm:py-20 bg-gradient-to-br from-gray-50 to-white">
@@ -491,7 +507,7 @@ export default function Home() {
               <div className="flex items-center">
                 <img 
                   src="/logo-white.png" 
-                  alt="AtypikHouse Logo" 
+                  alt="Logo AtypikHouse" 
                   className="w-20 h-20 object-contain"
                 />
                 <span className="text-xl font-bold">AtypikHouse</span>
@@ -509,7 +525,21 @@ export default function Home() {
                 <div className="space-y-2">
                   <a href="/" className="block text-green-100 hover:text-white transition-colors text-sm hover:scale-105 transform duration-200">Accueil</a>
                   <a href="/blog" className="block text-green-100 hover:text-white transition-colors text-sm hover:scale-105 transform duration-200">Blog</a>
+                  <a href="/sitemap" className="block text-green-100 hover:text-white transition-colors text-sm hover:scale-105 transform duration-200">Plan du site</a>
                   <a href="/qui-sommes-nous" className="block text-green-100 hover:text-white transition-colors text-sm hover:scale-105 transform duration-200">CGU</a>
+                  <a href="/cgv" className="block text-green-100 hover:text-white transition-colors text-sm hover:scale-105 transform duration-200">CGV</a>
+                  <button 
+                    onClick={() => {
+                      console.log('🔍 Footer contact button clicked, opening reCAPTCHA modal...');
+                      setShowReCaptchaModal(true);
+                      console.log('🔍 Modal state set to true');
+                    }} 
+                    className="block text-green-100 hover:text-white transition-colors text-sm hover:scale-105 transform duration-200 text-left"
+                  >
+                    Contactez-nous
+                  </button>
+
+                  
                 </div>
               </div>
 
@@ -518,8 +548,30 @@ export default function Home() {
                 <h3 className="font-semibold text-lg">Contact</h3>
                 <div className="space-y-2 text-sm text-green-100">
                   <p className="hover:text-white transition-colors cursor-pointer">contact@dsp4-ddm-023dis3-4-g9.fr</p>
-                  <p className="hover:text-white transition-colors cursor-pointer">+33 6 12 34 56 78</p>
                   <p className="hover:text-white transition-colors cursor-pointer">Europe</p>
+                                {/* Social Media Section - Bottom */}
+                            <div className="text-center mt-8 mb-8">
+                        <div className="flex justify-center gap-6">
+                          <a 
+                            href="https://facebook.com" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="bg-[#4A7C59] hover:bg-[#2C3E37] text-white p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg"
+                            aria-label="Suivez-nous sur Facebook"
+                          >
+                            <Facebook size={24} aria-hidden="true" />
+                          </a>
+                          <a 
+                            href="https://instagram.com" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="bg-[#4A7C59] hover:bg-[#2C3E37] text-white p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg"
+                            aria-label="Suivez-nous sur Instagram"
+                          >
+                            <Instagram size={24} aria-hidden="true" />
+                          </a>
+                        </div>
+                      </div>
                 </div>
               </div>
 
@@ -540,6 +592,20 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Cookie Settings Modal */}
+      <CookieSettings 
+        isOpen={showCookieSettings} 
+        onClose={() => setShowCookieSettings(false)} 
+      />
+
+      {/* ReCAPTCHA Modal */}
+      <ReCaptchaModal 
+        isOpen={showReCaptchaModal} 
+        onSuccess={() => window.location.href = '/contact'}
+        onClose={() => setShowReCaptchaModal(false)} 
+      />
+      </main>
     </div>
   );
 }

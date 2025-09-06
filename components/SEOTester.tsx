@@ -74,7 +74,7 @@ export default function SEOTester() {
         try {
           data.structuredData = JSON.parse(structuredData.textContent || '{}');
         } catch (error) {
-          console.error('Error parsing structured data:', error);
+          process.env.NODE_ENV === 'development' && console.error('Error parsing structured data:', error);
         }
       }
 

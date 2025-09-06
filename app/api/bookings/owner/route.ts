@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     const limit = searchParams.get('limit') ? parseInt(searchParams.get('limit')!) : 50;
 
     if (!ownerId) {
-      return NextResponse.json(
+      const response = NextResponse.json(
         { error: 'Owner ID is required' },
         { status: 400 }
       );
@@ -35,10 +35,15 @@ export async function GET(request: NextRequest) {
     const ownedPropertyIds = ownedProperties?.map(p => p.id) || [];
     
     if (ownedPropertyIds.length === 0) {
-      return NextResponse.json({ 
+      const response = NextResponse.json({ 
         data: [],
         count: 0
       });
+    // Add performance headers
+    response.headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+    
+    return response;
     }
 
     // Now get bookings for those properties
@@ -106,10 +111,15 @@ export async function GET(request: NextRequest) {
 
     console.log('🔍 Transformed bookings:', transformedBookings);
 
-    return NextResponse.json({ 
+    const response = NextResponse.json({ 
       data: transformedBookings,
       count: transformedBookings.length
     });
+    // Add performance headers
+    response.headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+    
+    return response;
 
   } catch (error) {
     console.error('Exception in owner bookings API:', error);
@@ -193,10 +203,15 @@ export async function PATCH(request: NextRequest) {
 
     console.log('✅ Booking updated successfully:', updatedBooking);
 
-    return NextResponse.json({ 
+    const response = NextResponse.json({ 
       data: updatedBooking,
       message: 'Booking status updated successfully' 
     });
+    // Add performance headers
+    response.headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=600');
+    response.headers.set('X-Content-Type-Options', 'nosniff');
+    
+    return response;
 
   } catch (error) {
     console.error('❌ Exception in booking update API:', error);

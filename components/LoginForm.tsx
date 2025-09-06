@@ -42,15 +42,15 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      console.log('🔄 LoginForm - Attempting sign in...');
+      process.env.NODE_ENV === 'development' && console.log('🔄 LoginForm - Attempting sign in...');
       const result = await signIn(loginData.email, loginData.password);
 
       if (result.error) {
-        console.error('❌ LoginForm - Sign in failed:', result.error);
+        process.env.NODE_ENV === 'development' && console.error('❌ LoginForm - Sign in failed:', result.error);
         setError(result.error.message || result.error);
         setLoading(false);
       } else {
-        console.log('✅ LoginForm - Sign in successful, waiting for redirect...');
+        process.env.NODE_ENV === 'development' && console.log('✅ LoginForm - Sign in successful, waiting for redirect...');
         // Keep loading state until redirect happens
         // The AuthProvider will handle the redirect once the profile is loaded
         setError('');
@@ -64,7 +64,7 @@ export default function LoginForm() {
         }, 2000);
       }
     } catch (error) {
-      console.error('❌ LoginForm - Exception during sign in:', error);
+      process.env.NODE_ENV === 'development' && console.error('❌ LoginForm - Exception during sign in:', error);
       setError('Une erreur est survenue lors de la connexion');
       setLoading(false);
     }

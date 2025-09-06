@@ -84,7 +84,8 @@
   },
   "devDependencies": {
     "@types/react": "18.3.23",
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "eslint-plugin-jsx-a11y": "^6.10.2"
   },
   "engines": {
     "node": ">=18.0.0",

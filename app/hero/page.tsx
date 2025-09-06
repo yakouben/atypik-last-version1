@@ -23,11 +23,16 @@ export default function HeroPage() {
   };
 
   return (
-    <HeroSection
-      onReserverClick={handleReserverClick}
-      onAddPropertyClick={handleAddPropertyClick}
-      onConnexionClick={handleConnexionClick}
-      onInscriptionClick={handleInscriptionClick}
-    />
+    <div>
+      {/* Hidden H1 for SEO */}
+      <h1 className="sr-only">AtypikHouse - Découvrez nos hébergements insolites</h1>
+      
+      <HeroSection
+        onReserverClick={handleReserverClick}
+        onAddPropertyClick={handleAddPropertyClick}
+        onConnexionClick={handleConnexionClick}
+        onInscriptionClick={handleInscriptionClick}
+      />
+    </div>
   );
 } 

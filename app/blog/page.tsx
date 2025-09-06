@@ -14,6 +14,7 @@ import {
   Filter,
   BookOpen
 } from 'lucide-react';
+import Breadcrumb, { generateBreadcrumbs } from '@/components/Breadcrumb';
 
 interface BlogPost {
   id: string;
@@ -185,6 +186,19 @@ export default function BlogPage(): React.JSX.Element {
     setSelectedPost(null);
   };
 
+  // Get 2 random blog posts (excluding current post)
+  const getRandomBlogPosts = (currentPost: BlogPost) => {
+    const otherPosts = blogPosts.filter(post => post.id !== currentPost.id);
+    const shuffled = otherPosts.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 2);
+  };
+
+  // Handle click on similar blog post
+  const handleSimilarPostClick = (post: BlogPost) => {
+    setSelectedPost(post);
+    // Keep modal open, just change the content
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -202,19 +216,27 @@ export default function BlogPage(): React.JSX.Element {
         </div>
       </div>
 
+      {/* Breadcrumb Navigation */}
+      <div className="bg-gray-50 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <Breadcrumb items={generateBreadcrumbs('blog')} />
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Search and Filters */}
         <div className="mb-8">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
             {/* Search Bar */}
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" aria-hidden="true" />
               <input
                 type="text"
                 placeholder="Rechercher un article..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[#4A7C59] focus:border-[#4A7C59] transition-all duration-300"
+                aria-label="Rechercher un article dans le blog"
               />
             </div>
 
@@ -449,6 +471,47 @@ export default function BlogPage(): React.JSX.Element {
                       >
                         #{tag}
                       </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Similar Blog Posts Section */}
+                <div className="mt-8 pt-6 border-t border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <BookOpen className="w-5 h-5 text-[#4A7C59]" />
+                    Découvrez aussi d'autres articles similaires
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {getRandomBlogPosts(selectedPost).map((post) => (
+                      <div 
+                        key={post.id}
+                        className="bg-gray-50 rounded-xl p-4 hover:bg-gray-100 transition-colors cursor-pointer group"
+                        onClick={() => handleSimilarPostClick(post)}
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className="w-16 h-16 bg-gray-200 rounded-lg overflow-hidden flex-shrink-0">
+                            <img
+                              src={post.image}
+                              alt={post.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-medium text-gray-900 group-hover:text-[#4A7C59] transition-colors mb-1 truncate">
+                              {post.title}
+                            </h4>
+                            <p className="text-sm text-gray-600 mb-2 overflow-hidden" style={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
+                              {post.excerpt}
+                            </p>
+                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                              <Calendar className="w-3 h-3" />
+                              <span>{formatDate(post.publishDate)}</span>
+                              <span>•</span>
+                              <span>{post.readTime}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>

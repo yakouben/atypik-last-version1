@@ -51,7 +51,7 @@ export default function OptimizedImage({
         `}
         onLoadingComplete={() => setIsLoading(false)}
         onError={(e) => {
-          console.error('Image failed to load:', src);
+          process.env.NODE_ENV === 'development' && console.error('Image failed to load:', src);
           setIsLoading(false);
         }}
       />

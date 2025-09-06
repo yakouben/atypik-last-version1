@@ -15,6 +15,8 @@ import {
 } from 'lucide-react';
 import { useAuthContext } from './AuthProvider';
 import OwnerBookingsDashboard from './OwnerBookingsDashboard';
+import UserMenu from './UserMenu';
+import Breadcrumb, { generateBreadcrumbs } from '@/components/Breadcrumb';
 
 interface Property {
   id: string;
@@ -179,17 +181,18 @@ export default function OwnerDashboard() {
               <span className="text-sm text-gray-600">
                 Bonjour, {userProfile?.full_name || 'Propriétaire'}
               </span>
-            <button 
-              onClick={handleSignOut}
-              className="flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
-            >
-                <LogOut className="w-4 h-4" />
-              <span>Déconnexion</span>
-            </button>
+            <UserMenu userName={userProfile?.full_name || 'Propriétaire'} />
           </div>
         </div>
       </div>
       </header>
+
+      {/* Breadcrumb Navigation */}
+      <div className="bg-gray-50 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <Breadcrumb items={generateBreadcrumbs('owner-dashboard')} />
+        </div>
+      </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Navigation Tabs */}

@@ -31,7 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isProcessingAuth, setIsProcessingAuth] = useState(false);
 
   // Define public routes that should never trigger authentication logic
-  const publicRoutes = ['/', '/blog', '/qui-sommes-nous', '/properties'];
+  const publicRoutes = ['/', '/blog', '/qui-sommes-nous', '/cgv', '/contact', '/properties', '/sitemap', '/auth'];
   const isPublicRoute = publicRoutes.some(route => pathname === route || pathname.startsWith(route + '/'));
 
   useEffect(() => {
@@ -42,7 +42,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       userType: auth.userProfile?.user_type,
       pathname,
       isProcessingAuth,
-      isPublicRoute
+      isPublicRoute,
+      isAuthPage: pathname.includes('/auth')
     });
 
     if (!auth.loading) {
@@ -82,8 +83,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const isOnHomePage = pathname === '/';
         const isOnBlogPage = pathname === '/blog';
         const isOnQuiSommesPage = pathname === '/qui-sommes-nous';
+        const isOnCGVPage = pathname === '/cgv';
+        const isOnContactPage = pathname === '/contact';
+        const isOnSitemapPage = pathname === '/sitemap';
         
-        if (!isOnAuthPage && !isOnHomePage && !isOnBlogPage && !isOnQuiSommesPage) {
+        // Only redirect if not on any allowed page - simplified logic
+        const isAllowedPage = isOnAuthPage || isOnHomePage || isOnBlogPage || isOnQuiSommesPage || isOnCGVPage || isOnContactPage || isOnSitemapPage || pathname.includes('/properties/');
+        
+        if (!isAllowedPage) {
           const redirectPath = '/';
           console.log('🔄 AuthProvider - redirecting to home:', redirectPath);
           if (lastRedirect !== redirectPath) {
@@ -104,26 +111,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const userType = auth.userProfile.user_type;
       const redirectPath = userType === 'owner' ? '/dashboard/owner' : '/dashboard/client';
       
-      // Always redirect to dashboard when profile is loaded, regardless of current route
-      console.log('🔄 AuthProvider - final redirect to:', redirectPath);
-      setLastRedirect(redirectPath);
-      router.push(redirectPath);
-    }
-  }, [isProcessingAuth, auth.user, auth.userProfile, router, lastRedirect]);
-
-  // Force redirect to dashboard if user is authenticated and on a public route
-  useEffect(() => {
-    if (auth.user && auth.userProfile && isPublicRoute) {
-      const userType = auth.userProfile.user_type;
-      const redirectPath = userType === 'owner' ? '/dashboard/owner' : '/dashboard/client';
-      
-      console.log('🔄 AuthProvider - forcing redirect from public route to dashboard:', redirectPath);
-      if (lastRedirect !== redirectPath) {
+      // Only redirect if not on auth pages
+      if (!pathname.includes('/auth')) {
+        console.log('🔄 AuthProvider - final redirect to:', redirectPath);
         setLastRedirect(redirectPath);
         router.push(redirectPath);
       }
     }
-  }, [auth.user, auth.userProfile, isPublicRoute, router, lastRedirect]);
+  }, [isProcessingAuth, auth.user, auth.userProfile, router, lastRedirect, pathname]);
+
+  // Force redirect to dashboard if user is authenticated and on a public route (except informational pages)
+  useEffect(() => {
+    if (auth.user && auth.userProfile && isPublicRoute) {
+      // Allow access to informational pages even when authenticated
+      const isInformationalPage = pathname === '/blog' || pathname === '/qui-sommes-nous' || pathname === '/cgv' || pathname === '/contact' || pathname === '/sitemap' || pathname.includes('/properties/');
+      
+      if (!isInformationalPage) {
+        const userType = auth.userProfile.user_type;
+        const redirectPath = userType === 'owner' ? '/dashboard/owner' : '/dashboard/client';
+        
+        console.log('🔄 AuthProvider - forcing redirect from public route to dashboard:', redirectPath);
+        if (lastRedirect !== redirectPath) {
+          setLastRedirect(redirectPath);
+          router.push(redirectPath);
+        }
+      }
+    }
+  }, [auth.user, auth.userProfile, isPublicRoute, router, lastRedirect, pathname]);
 
   const value = {
     user: auth.user,

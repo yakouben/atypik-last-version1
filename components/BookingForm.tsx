@@ -185,31 +185,31 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
 
   const validateForm = () => {
     if (!formData.full_name.trim()) {
-      setError('Please enter your full name');
+      setError('Veuillez saisir votre nom complet');
       return false;
     }
     if (!formData.email_or_phone.trim()) {
-      setError('Please enter your email or phone number');
+      setError('Veuillez saisir votre email ou numéro de téléphone');
       return false;
     }
     if (!formData.check_in_date) {
-      setError('Please select a check-in date');
+      setError('Veuillez sélectionner une date d\'arrivée');
       return false;
     }
     if (!formData.check_out_date) {
-      setError('Please select a check-out date');
+      setError('Veuillez sélectionner une date de départ');
       return false;
     }
     if (formData.guest_count < 1) {
-      setError('Guest count must be at least 1');
+      setError('Le nombre de voyageurs doit être d\'au moins 1');
       return false;
     }
     if (formData.guest_count > property.max_guests) {
-      setError(`Maximum ${property.max_guests} guests allowed for this property`);
+      setError(`Maximum ${property.max_guests} voyageurs autorisés pour cette propriété`);
       return false;
     }
     if (totalPrice <= 0) {
-      setError('Please select valid dates');
+      setError('Veuillez sélectionner des dates valides');
       return false;
     }
     return true;
@@ -220,7 +220,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
     setError(null);
 
     if (!userProfile) {
-      setError('Please sign in to make a booking');
+      setError('Veuillez vous connecter pour effectuer une réservation');
       return;
     }
 
@@ -262,11 +262,13 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
       console.log('Response result:', result);
 
       if (!response.ok) {
-        setError(result.error || 'Failed to create booking');
+        setError(result.error || 'Échec de la création de la réservation');
         return;
       }
 
       setSuccess(true);
+      console.log('✅ Booking created successfully - real-time updates should trigger automatically');
+      
       setTimeout(() => {
         onClose();
         setSuccess(false);
@@ -282,8 +284,8 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
       }, 2000);
 
     } catch (error) {
-      console.error('Error creating booking:', error);
-      setError('Failed to create booking. Please try again.');
+      console.error('Erreur lors de la création de la réservation:', error);
+      setError('Échec de la création de la réservation. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }
@@ -339,8 +341,8 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
                 <CheckCircle className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-green-800 text-lg">Booking Successful!</h3>
-                <p className="text-green-600">Your booking has been created successfully.</p>
+                <h3 className="font-semibold text-green-800 text-lg">Réservation réussie !</h3>
+                <p className="text-green-600">Votre réservation a été créée avec succès.</p>
               </div>
             </div>
           </div>
@@ -354,7 +356,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
                 <AlertCircle className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="font-semibold text-red-800 text-lg">Booking Error</h3>
+                <h3 className="font-semibold text-red-800 text-lg">Erreur de réservation</h3>
                 <p className="text-red-600">{error}</p>
               </div>
             </div>
@@ -366,7 +368,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
           {/* Full Name */}
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Full Name *
+              Nom complet *
             </label>
             <div className="relative group">
               <User className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#2d5016] transition-colors" />
@@ -375,7 +377,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
                 value={formData.full_name}
                 onChange={(e) => handleInputChange('full_name', e.target.value)}
                 className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-[#2d5016]/20 focus:border-[#2d5016] transition-all duration-300 bg-gray-50/50 hover:bg-white"
-                placeholder="Enter your full name"
+                placeholder="Saisissez votre nom complet"
                 required
               />
             </div>
@@ -384,7 +386,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
           {/* Email or Phone */}
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Email or Phone *
+              Email ou téléphone *
             </label>
             <div className="relative group">
               <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#2d5016] transition-colors" />
@@ -393,7 +395,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
                 value={formData.email_or_phone}
                 onChange={(e) => handleInputChange('email_or_phone', e.target.value)}
                 className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-[#2d5016]/20 focus:border-[#2d5016] transition-all duration-300 bg-gray-50/50 hover:bg-white"
-                placeholder="Enter your email or phone number"
+                placeholder="Saisissez votre email ou numéro de téléphone"
                 required
               />
             </div>
@@ -402,7 +404,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
           {/* Travel Type */}
           <div className="space-y-3">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              You come with
+              Vous venez avec
             </label>
             <div className="grid grid-cols-2 gap-4">
               <button
@@ -422,7 +424,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
                   }`}>
                     <Users className="w-4 h-4" />
                   </div>
-                  <span className="font-semibold">Family</span>
+                  <span className="font-semibold">Famille</span>
                 </div>
               </button>
               <button
@@ -442,7 +444,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
                   }`}>
                     <Users className="w-4 h-4" />
                   </div>
-                  <span className="font-semibold">Friends</span>
+                  <span className="font-semibold">Amis</span>
                 </div>
               </button>
             </div>
@@ -452,7 +454,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Check-in Date *
+                Date d'arrivée *
               </label>
               <div className="relative calendar-container group">
                 <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#2d5016] transition-colors" />
@@ -462,7 +464,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
                   onClick={() => setShowCheckInCalendar(!showCheckInCalendar)}
                   readOnly
                   className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-[#2d5016]/20 focus:border-[#2d5016] transition-all duration-300 bg-gray-50/50 hover:bg-white cursor-pointer"
-                  placeholder="Select check-in date"
+                  placeholder="Sélectionnez la date d'arrivée"
                   required
                 />
                 {showCheckInCalendar && (
@@ -502,7 +504,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
             </div>
             <div className="space-y-2">
               <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Check-out Date *
+                Date de départ *
               </label>
               <div className="relative calendar-container group">
                 <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#2d5016] transition-colors" />
@@ -512,7 +514,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
                   onClick={() => setShowCheckOutCalendar(!showCheckOutCalendar)}
                   readOnly
                   className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-[#2d5016]/20 focus:border-[#2d5016] transition-all duration-300 bg-gray-50/50 hover:bg-white cursor-pointer"
-                  placeholder="Select check-out date"
+                  placeholder="Sélectionnez la date de départ"
                   required
                 />
                 {showCheckOutCalendar && (
@@ -555,7 +557,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
           {/* Guest Count */}
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Number of Guests *
+              Nombre de voyageurs *
             </label>
             <div className="relative group">
               <Users className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#2d5016] transition-colors" />
@@ -570,20 +572,20 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
                 required
               />
             </div>
-            <p className="text-xs text-gray-500 mt-1">Maximum {property.max_guests} guests allowed</p>
+            <p className="text-xs text-gray-500 mt-1">Maximum {property.max_guests} voyageurs autorisés</p>
           </div>
 
           {/* Special Requests */}
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Special Requests (Optional)
+              Demandes spéciales (Optionnel)
             </label>
             <div className="relative group">
               <MessageSquare className="absolute left-4 top-4 w-5 h-5 text-gray-400 group-focus-within:text-[#2d5016] transition-colors" />
               <textarea
                 value={formData.special_requests}
                 onChange={(e) => handleInputChange('special_requests', e.target.value)}
-                placeholder="Any special requests or requirements..."
+                placeholder="Toute demande spéciale ou exigence..."
                 rows={3}
                 className="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-[#2d5016]/20 focus:border-[#2d5016] transition-all duration-300 bg-gray-50/50 hover:bg-white resize-none"
               />
@@ -603,7 +605,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
                   />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center">
-                    <span className="text-gray-600 text-xs font-medium">No Image</span>
+                    <span className="text-gray-600 text-xs font-medium">Aucune image</span>
                   </div>
                 )}
               </div>
@@ -617,7 +619,7 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
             
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <span className="text-gray-600 font-medium">€{property.price_per_night} × {nights} nights</span>
+                <span className="text-gray-600 font-medium">€{property.price_per_night} × {nights} nuits</span>
                 <span className="font-semibold text-lg">€{totalPrice}</span>
               </div>
               <div className="border-t border-gray-300 pt-4">
@@ -638,17 +640,17 @@ export default function BookingForm({ isOpen, onClose, property }: BookingFormPr
             {loading ? (
               <div className="flex items-center space-x-3">
                 <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                <span>Creating booking...</span>
+                <span>Création de la réservation...</span>
               </div>
             ) : success ? (
               <div className="flex items-center space-x-3">
                 <CheckCircle className="w-5 h-5" />
-                <span>Booking Created!</span>
+                <span>Réservation créée ! Vérifiez votre dashboard</span>
               </div>
             ) : (
               <div className="flex items-center space-x-3">
                 <Euro className="w-5 h-5" />
-                <span>Book Now - €{totalPrice}</span>
+                <span>Réserver maintenant - €{totalPrice}</span>
               </div>
             )}
           </Button>

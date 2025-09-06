@@ -14,12 +14,14 @@ import {
   ChevronLeft,
   ChevronRight,
   ExternalLink,
-  X
+  X,
+  TreePine
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useAuthContext } from '@/components/AuthProvider';
 import BookingForm from '@/components/BookingForm';
+import Breadcrumb, { generateBreadcrumbs } from '@/components/Breadcrumb';
 
 interface Property {
   id: string;
@@ -54,6 +56,7 @@ export default function PropertyDetailPage() {
   const [showBookingForm, setShowBookingForm] = useState(false);
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [similarProperties, setSimilarProperties] = useState<Property[]>([]);
 
   useEffect(() => {
     if (params.id) {
@@ -122,7 +125,7 @@ export default function PropertyDetailPage() {
 
   const loadProperty = async (id: string) => {
     try {
-      console.log('🔍 Loading property with ID:', id);
+      console.log('🔍 Chargement de la propriété avec l\'ID:', id);
       const response = await fetch(`/api/properties/${id}`);
       const result = await response.json();
       
@@ -130,32 +133,66 @@ export default function PropertyDetailPage() {
         console.log('✅ Property loaded successfully:', result.data);
         console.log('🔍 Owner ID:', result.data.owner_id);
         
-        // Always fetch owner profile information
-        if (result.data.owner_id) {
-          try {
-            console.log('🔍 Fetching owner profile for ID:', result.data.owner_id);
-            const ownerResponse = await fetch(`/api/profiles/${result.data.owner_id}`);
-            const ownerResult = await ownerResponse.json();
-            
-            if (ownerResponse.ok && ownerResult.data) {
-              result.data.profiles = ownerResult.data;
-              console.log('✅ Owner profile fetched:', ownerResult.data);
-            } else {
-              console.error('❌ Failed to fetch owner profile:', ownerResult.error);
-            }
-          } catch (ownerError) {
-            console.error('❌ Error fetching owner profile:', ownerError);
-          }
-        }
+        // Skip owner profile fetching to avoid errors - not needed for property display
+        // if (result.data.owner_id) {
+        //   try {
+        //     console.log('🔍 Fetching owner profile for ID:', result.data.owner_id);
+        //     const ownerResponse = await fetch(`/api/profiles/${result.data.owner_id}`);
+        //     const ownerResult = await ownerResponse.json();
+        //     
+        //     if (ownerResponse.ok && ownerResult.data) {
+        //       result.data.profiles = ownerResult.data;
+        //       console.log('✅ Owner profile fetched:', ownerResult.data);
+        //     } else {
+        //       console.error('❌ Échec de la récupération du profil du propriétaire:', ownerResult.error);
+        //     }
+        //           } catch (ownerError) {
+        //     console.error('❌ Erreur lors de la récupération du profil du propriétaire:', ownerError);
+        //   }
+        // }
         
         setProperty(result.data);
+        
+        // Load similar properties from the same category
+        if (result.data.category) {
+          loadSimilarProperties(result.data.category, result.data.id);
+        }
       } else {
-        console.error('❌ Error loading property:', result.error);
+        console.error('❌ Erreur lors du chargement de la propriété:', result.error);
       }
     } catch (error) {
-      console.error('❌ Error loading property:', error);
+              console.error('❌ Erreur lors du chargement de la propriété:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadSimilarProperties = async (category: string, currentPropertyId: string) => {
+    try {
+      console.log('🔍 Chargement des propriétés similaires pour la catégorie:', category);
+      const response = await fetch(`/api/properties?category=${category}&published=true&available=true`);
+      const result = await response.json();
+      
+      if (response.ok && result.data) {
+        // Filter out current property and get first 3 similar properties
+        const filtered = result.data
+          .filter((prop: Property) => prop.id !== currentPropertyId)
+          .slice(0, 3);
+        
+        console.log('✅ Propriétés similaires chargées:', filtered.length);
+        setSimilarProperties(filtered);
+        
+        // For testing: If no similar properties found, show a test message
+        if (filtered.length === 0) {
+          console.log('ℹ️ Aucune propriété similaire trouvée - affichage du message de fallback');
+        }
+      } else {
+        console.error('❌ Erreur lors du chargement des propriétés similaires:', result.error);
+        setSimilarProperties([]);
+      }
+    } catch (error) {
+      console.error('❌ Erreur lors du chargement des propriétés similaires:', error);
+      setSimilarProperties([]);
     }
   };
 
@@ -173,8 +210,8 @@ export default function PropertyDetailPage() {
 
   const handleBookNow = () => {
     if (!userProfile) {
-      // Redirect to sign in or show sign in modal
-      router.push('/?signin=true');
+      // Redirect to login page
+      router.push('/auth/login');
       return;
     }
     setShowBookingForm(true);
@@ -213,12 +250,12 @@ export default function PropertyDetailPage() {
 
   const getCategoryTags = (category: string) => {
     const tags = {
-      'cabane_arbre': ['Authentic', 'Nature', 'Comfort', 'Unique'],
-      'yourte': ['Authentic', 'Nature', 'Comfort', 'Unique'],
-      'cabane_flottante': ['Authentic', 'Nature', 'Comfort', 'Unique'],
-      'autre': ['Authentic', 'Nature', 'Comfort', 'Unique']
+      'cabane_arbre': ['Authentique', 'Nature', 'Confort', 'Unique'],
+      'yourte': ['Authentique', 'Nature', 'Confort', 'Unique'],
+      'cabane_flottante': ['Authentique', 'Nature', 'Confort', 'Unique'],
+      'autre': ['Authentique', 'Nature', 'Confort', 'Unique']
     };
-    return tags[category as keyof typeof tags] || ['Authentic', 'Nature', 'Comfort', 'Unique'];
+    return tags[category as keyof typeof tags] || ['Authentique', 'Nature', 'Confort', 'Unique'];
   };
 
   return (
@@ -237,6 +274,15 @@ export default function PropertyDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Breadcrumb Navigation */}
+      {property && (
+        <div className="bg-gray-50 border-b border-gray-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <Breadcrumb items={generateBreadcrumbs('property-detail', { title: property.name })} />
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -588,16 +634,100 @@ export default function PropertyDetailPage() {
 
           {/* Description Section */}
           <div className="mb-16 sm:mb-24">
-            <h3 className="text-xl sm:text-2xl font-bold text-[#333333] mb-4">Our House</h3>
+            <h3 className="text-xl sm:text-2xl font-bold text-[#333333] mb-4">Notre Maison</h3>
             <div className="prose max-w-none">
               <p className="text-[#333333] leading-relaxed text-sm sm:text-base mb-4">
-                {property.description || `Experience the ultimate comfort and luxury in our ${getCategoryLabel(property.category)}. 
-                This deluxe accommodation offers a perfect blend of modern amenities and natural beauty, 
-                making it ideal for couples, families, or solo travelers seeking a unique and memorable stay. 
-                With ${property.max_guests} guests capacity and stunning views, this property provides everything 
-                you need for a relaxing and enjoyable vacation.`}
+                {property.description || `Découvrez le confort et le luxe ultimes dans notre ${getCategoryLabel(property.category)}. 
+                Cet hébergement de luxe offre un mélange parfait d'équipements modernes et de beauté naturelle, 
+                idéal pour les couples, familles ou voyageurs solo recherchant un séjour unique et mémorable. 
+                Avec une capacité de ${property.max_guests} voyageurs et des vues imprenables, cette propriété offre tout 
+                ce dont vous avez besoin pour des vacances relaxantes et agréables.`}
               </p>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Similar Properties Section */}
+      <div className="bg-gray-50 py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+              Découvrez aussi d'autres propriétés similaires
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Explorez d'autres hébergements de la même catégorie pour enrichir votre expérience
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {/* Similar Properties will be loaded here */}
+            {similarProperties.length > 0 ? (
+              similarProperties.map((similarProperty) => (
+              <div 
+                key={similarProperty.id}
+                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer group"
+                onClick={() => router.push(`/properties/${similarProperty.id}`)}
+              >
+                <div className="relative h-48 overflow-hidden rounded-t-2xl">
+                  <img
+                    src={similarProperty.images?.[0] || '/placeholder-property.jpg'}
+                    alt={similarProperty.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  
+                  {/* Category Badge */}
+                  <div className="absolute top-3 left-3">
+                    <div className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-medium text-gray-800 shadow-lg">
+                      {getCategoryLabel(similarProperty.category)}
+                    </div>
+                  </div>
+                  
+                  {/* Price Badge */}
+                  <div className="absolute top-3 right-3">
+                    <div className="bg-[#4A7C59]/90 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+                      €{similarProperty.price_per_night}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#4A7C59] transition-colors">
+                    {similarProperty.name}
+                  </h3>
+                  <p className="text-gray-600 mb-3 flex items-center">
+                    <MapPin className="w-4 h-4 mr-2 text-[#4A7C59]" />
+                    {similarProperty.location}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-gray-600">
+                      <Users className="w-4 h-4 mr-2 text-[#4A7C59]" />
+                      <span className="text-sm">{similarProperty.max_guests} voyageurs</span>
+                    </div>
+                    <Button 
+                      size="sm"
+                      className="bg-[#4A7C59] hover:bg-[#2C3E37] text-white px-4 py-2 rounded-xl transition-colors"
+                    >
+                      Voir
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <div className="bg-white rounded-2xl p-8 shadow-lg">
+                  <TreePine className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                    Aucune propriété similaire trouvée
+                  </h3>
+                  <p className="text-gray-500">
+                    Découvrez d'autres catégories d'hébergements disponibles
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -607,17 +737,17 @@ export default function PropertyDetailPage() {
         <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-4">
           <div className="flex items-center justify-between">
             <div className="flex flex-col">
-              <span className="text-[#696969] text-sm font-medium">Price</span>
+              <span className="text-[#696969] text-sm font-medium">Prix</span>
               <div className="flex items-baseline space-x-1">
                 <span className="text-2xl sm:text-3xl font-bold text-[#2d5016]">€{property.price_per_night}</span>
-                <span className="text-[#696969] text-sm">/ night</span>
+                <span className="text-[#696969] text-sm">/ nuit</span>
               </div>
             </div>
             <Button 
               onClick={handleBookNow}
               className="bg-gradient-to-r from-[#4A7C59] to-[#2C3E37] hover:from-[#2C3E37] hover:to-[#4A7C59] text-white px-8 py-3 rounded-2xl font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
             >
-              Book now
+              Réserver maintenant
             </Button>
           </div>
         </div>

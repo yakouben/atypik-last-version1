@@ -102,11 +102,11 @@ export default function OwnerReservationsPage() {
         setReservations(result.data);
         calculateStats(result.data);
       } else {
-        console.error('Error loading reservations:', result.error);
+        process.env.NODE_ENV === 'development' && console.error('Error loading reservations:', result.error);
         setReservations([]);
       }
     } catch (error) {
-      console.error('Error loading reservations:', error);
+      process.env.NODE_ENV === 'development' && console.error('Error loading reservations:', error);
       setReservations([]);
     } finally {
       setLoading(false);
@@ -149,7 +149,7 @@ export default function OwnerReservationsPage() {
 
   const handleStatusUpdate = async (reservationId: string, newStatus: string) => {
     try {
-      console.log('🔍 Updating reservation:', { reservationId, newStatus });
+      process.env.NODE_ENV === 'development' && console.log('🔍 Updating reservation:', { reservationId, newStatus });
       
       const response = await fetch('/api/bookings/owner', {
         method: 'PATCH',
@@ -162,19 +162,19 @@ export default function OwnerReservationsPage() {
         }),
       });
 
-      console.log('🔍 Response status:', response.status);
+      process.env.NODE_ENV === 'development' && console.log('🔍 Response status:', response.status);
 
       if (response.ok) {
-        console.log('✅ Reservation updated successfully');
+        process.env.NODE_ENV === 'development' && console.log('✅ Reservation updated successfully');
         // Reload reservations to get updated data
         await loadReservations();
       } else {
         const result = await response.json();
-        console.error('❌ Error updating reservation:', result);
+        process.env.NODE_ENV === 'development' && console.error('❌ Error updating reservation:', result);
         alert('Error updating reservation: ' + result.error);
       }
     } catch (error) {
-      console.error('❌ Exception updating reservation:', error);
+      process.env.NODE_ENV === 'development' && console.error('❌ Exception updating reservation:', error);
       alert('Error updating reservation: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   };

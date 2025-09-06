@@ -217,7 +217,7 @@ export default function PropertyForm({ isOpen, onClose, property, onSuccess }: P
     }
 
     try {
-      console.log('Uploading compressed images...');
+      process.env.NODE_ENV === 'development' && console.log('Uploading compressed images...');
       const response = await fetch('/api/properties/upload-images', {
         method: 'POST',
         body: formData
@@ -225,15 +225,15 @@ export default function PropertyForm({ isOpen, onClose, property, onSuccess }: P
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.error('Upload response error:', errorData);
+        process.env.NODE_ENV === 'development' && console.error('Upload response error:', errorData);
         throw new Error(errorData.error || 'Failed to upload images');
       }
 
       const result = await response.json();
-      console.log('Upload successful:', result);
+      process.env.NODE_ENV === 'development' && console.log('Upload successful:', result);
       return result.imageUrls;
     } catch (error) {
-      console.error('Error uploading images:', error);
+      process.env.NODE_ENV === 'development' && console.error('Error uploading images:', error);
       throw error;
     }
   };
@@ -277,7 +277,7 @@ export default function PropertyForm({ isOpen, onClose, property, onSuccess }: P
       onSuccess();
       onClose();
     } catch (error) {
-      console.error('Error saving property:', error);
+      process.env.NODE_ENV === 'development' && console.error('Error saving property:', error);
       alert('Erreur lors de la sauvegarde de la propriété');
     } finally {
       setLoading(false);

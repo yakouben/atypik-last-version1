@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test JSON-LD - AtypikHouse</title>
+    
+    <!-- Organization Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TravelAgency",
+      "name": "AtypikHouse",
+      "description": "Hebergements insolites et ecoresponsables en France et en Europe",
+      "url": "https://www.dsp4-ddm-023dis3-4-g9.fr",
+      "logo": "https://www.dsp4-ddm-023dis3-4-g9.fr/logo-white.png",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Pierrefonds",
+        "addressRegion": "Oise",
+        "addressCountry": "FR"
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": "French"
+      },
+      "sameAs": [
+        "https://facebook.com/dsp4-ddm-023dis3-4-g9",
+        "https://instagram.com/dsp4-ddm-023dis3-4-g9"
+      ],
+      "areaServed": [
+        {
+          "@type": "Country",
+          "name": "France"
+        },
+        {
+          "@type": "Country", 
+          "name": "Europe"
+        }
+      ],
+      "serviceType": "Hebergements insolites et eco-responsables",
+      "priceRange": "€€",
+      "currenciesAccepted": "EUR",
+      "paymentAccepted": "Credit Card, PayPal, Bank Transfer"
+    }
+    </script>
+    
+    <!-- Breadcrumb Schema -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Accueil",
+          "item": "https://www.dsp4-ddm-023dis3-4-g9.fr"
+        }
+      ]
+    }
+    </script>
+</head>
+<body>
+    <h1>Test JSON-LD - AtypikHouse</h1>
+    <p>This page contains structured data for testing.</p>
+    
+    <h2>How to Test:</h2>
+    <ol>
+        <li>Open Google Rich Results Test: <a href="https://search.google.com/test/rich-results" target="_blank">https://search.google.com/test/rich-results</a></li>
+        <li>Enter this file URL or paste the HTML</li>
+        <li>Check for Organization and Breadcrumb schemas</li>
+    </ol>
+    
+    <h2>Expected Results:</h2>
+    <ul>
+        <li>✅ Organization Schema (TravelAgency)</li>
+        <li>✅ Breadcrumb Schema</li>
+        <li>✅ No validation errors</li>
+    </ul>
+</body>
+</html>

@@ -61,9 +61,9 @@ export default function ReservationModal({ isOpen, onClose, propertyId, property
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
 
   useEffect(() => {
-    console.log('🔍 ReservationModal useEffect:', { isOpen, propertyId });
+    process.env.NODE_ENV === 'development' && console.log('🔍 ReservationModal useEffect:', { isOpen, propertyId });
     if (isOpen && propertyId) {
-      console.log('🔍 Loading reservations for property:', propertyId);
+      process.env.NODE_ENV === 'development' && console.log('🔍 Loading reservations for property:', propertyId);
       loadReservations();
     }
   }, [isOpen, propertyId]);
@@ -77,22 +77,22 @@ export default function ReservationModal({ isOpen, onClose, propertyId, property
       setLoading(true);
       setError(null);
       
-      console.log('🔍 Fetching reservations from:', `/api/bookings?propertyId=${propertyId}`);
+      process.env.NODE_ENV === 'development' && console.log('🔍 Fetching reservations from:', `/api/bookings?propertyId=${propertyId}`);
       const response = await fetch(`/api/bookings?propertyId=${propertyId}`);
       const result = await response.json();
       
-      console.log('🔍 Reservation response:', result);
+      process.env.NODE_ENV === 'development' && console.log('🔍 Reservation response:', result);
       
       if (response.ok && result.data) {
         setReservations(result.data);
-        console.log('🔍 Reservations loaded:', result.data.length);
+        process.env.NODE_ENV === 'development' && console.log('🔍 Reservations loaded:', result.data.length);
       } else {
         setError(result.error || 'Failed to load reservations');
         setReservations([]);
-        console.error('🔍 Error loading reservations:', result.error);
+        process.env.NODE_ENV === 'development' && console.error('🔍 Error loading reservations:', result.error);
       }
     } catch (error) {
-      console.error('Error loading reservations:', error);
+      process.env.NODE_ENV === 'development' && console.error('Error loading reservations:', error);
       setError('Failed to load reservations');
       setReservations([]);
     } finally {
@@ -172,11 +172,11 @@ export default function ReservationModal({ isOpen, onClose, propertyId, property
   };
 
   if (!isOpen) {
-    console.log('🔍 Modal not open, returning null');
+    process.env.NODE_ENV === 'development' && console.log('🔍 Modal not open, returning null');
     return null;
   }
 
-  console.log('🔍 Rendering ReservationModal:', { isOpen, propertyId, propertyName });
+  process.env.NODE_ENV === 'development' && console.log('🔍 Rendering ReservationModal:', { isOpen, propertyId, propertyName });
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] flex items-center justify-center p-4">

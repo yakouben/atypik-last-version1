@@ -9,6 +9,13 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    // Quick validation
+    if (!params.id || params.id.length < 10) {
+      return NextResponse.json(
+        { error: 'ID utilisateur invalide' },
+        { status: 400 }
+      );
+    }
     const cookieStore = cookies();
     const supabase = createServerClient(cookieStore);
 

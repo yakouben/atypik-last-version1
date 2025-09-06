@@ -23,6 +23,12 @@ function GoogleAnalyticsInner({ GA_MEASUREMENT_ID }: GoogleAnalyticsProps) {
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    console.log('🔍 GA4 Setup Check:', {
+      GA_MEASUREMENT_ID,
+      pathname,
+      gtagAvailable: typeof window !== 'undefined' && typeof window.gtag === 'function'
+    });
+    
     if (pathname && window.gtag) {
       window.gtag('config', GA_MEASUREMENT_ID, {
         page_path: pathname + searchParams.toString(),
@@ -32,6 +38,7 @@ function GoogleAnalyticsInner({ GA_MEASUREMENT_ID }: GoogleAnalyticsProps) {
   }, [pathname, searchParams, GA_MEASUREMENT_ID]);
 
   if (!GA_MEASUREMENT_ID) {
+    console.log('❌ GA_MEASUREMENT_ID is missing!');
     return null;
   }
 
@@ -76,12 +83,16 @@ export const trackEvent = (
   label?: string,
   value?: number
 ) => {
+  console.log('🎯 trackEvent called:', { action, category, label, value });
   if (typeof window !== 'undefined' && window.gtag) {
+    console.log('✅ gtag is available, firing event');
     window.gtag('event', action, {
       event_category: category,
       event_label: label,
       value: value,
     });
+  } else {
+    console.log('❌ gtag not available or not in browser');
   }
 };
 
@@ -90,6 +101,35 @@ export const trackPageView = (url: string) => {
   if (typeof window !== 'undefined' && window.gtag) {
     window.gtag('config', process.env.NEXT_PUBLIC_GA_ID!, {
       page_path: url,
+    });
+  }
+};
+
+// Specific event tracking functions for your requirements
+export const trackFormSubmit = (formName: string) => {
+  trackEvent('form_submit', 'engagement', formName);
+};
+
+export const trackCtaClick = (buttonName: string, location: string) => {
+  console.log('🔥 trackCtaClick called:', buttonName, location);
+  trackEvent('cta_click', 'engagement', `${buttonName}_${location}`);
+};
+
+export const trackReservation = (propertyName: string, propertyId?: string) => {
+  console.log('🔥 trackReservation called:', propertyName, propertyId);
+  trackEvent('reservation', 'conversion', propertyName, 1);
+  // Also track as a conversion event
+  if (typeof window !== 'undefined' && window.gtag) {
+    window.gtag('event', 'purchase', {
+      transaction_id: `reservation_${Date.now()}`,
+      value: 1,
+      currency: 'EUR',
+      items: [{
+        item_id: propertyId || 'unknown',
+        item_name: propertyName,
+        item_category: 'accommodation',
+        quantity: 1
+      }]
     });
   }
 }; 

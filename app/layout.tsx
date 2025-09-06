@@ -5,6 +5,8 @@ import { AuthProvider } from '@/components/AuthProvider';
 import PerformanceMonitor from '@/components/PerformanceMonitor';
 import PerformanceOptimizer from '@/components/PerformanceOptimizer';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
+import CookieBanner from '@/components/CookieBanner';
+import { OrganizationJsonLd } from '@/components/JsonLd';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -22,10 +24,10 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: 'AtypikHouse - Hébergements insolites et éco-responsables',
+    default: 'AtypikHouse - Hébergements insolites en Europe',
     template: '%s | AtypikHouse'
   },
-  description: 'Découvrez des hébergements uniques en France et en Europe : cabanes dans les arbres, yourtes traditionnelles et cabanes flottantes. Réservez votre séjour insolite avec AtypikHouse.',
+  description: 'Découvrez des cabanes dans les arbres, yourtes et cabanes flottantes. Réservez votre séjour unique avec AtypikHouse. Plus de 40 hébergements insolites en Europe.',
   keywords: [
     'hébergements insolites',
     'cabanes dans les arbres', 
@@ -53,8 +55,8 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'AtypikHouse - Hébergements insolites et éco-responsables',
-    description: 'Découvrez des hébergements uniques en France et en Europe : cabanes dans les arbres, yourtes traditionnelles et cabanes flottantes.',
+    title: 'AtypikHouse - Hébergements insolites en Europe',
+    description: 'Découvrez des cabanes dans les arbres, yourtes et cabanes flottantes. Réservez votre séjour unique avec AtypikHouse.',
     url: 'https://www.dsp4-ddm-023dis3-4-g9.fr',
     siteName: 'AtypikHouse',
     images: [
@@ -70,8 +72,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AtypikHouse - Hébergements insolites et éco-responsables',
-    description: 'Découvrez des hébergements uniques en France et en Europe.',
+    title: 'AtypikHouse - Hébergements insolites en Europe',
+    description: 'Découvrez des cabanes dans les arbres, yourtes et cabanes flottantes.',
     images: ['/hero.jpg'],
     creator: '@atypikhouse',
   },
@@ -150,7 +152,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         
         {/* Favicon */}
-        <link rel="icon" href="/logo-white.png" sizes="32x32 48x48" />
+        <link rel="icon" href="/favicon.png" sizes="192x192" />
+        <link rel="apple-touch-icon" sizes="256x256" href="/favicon.png" />
+        <link rel="icon" type="image/png" sizes="256x256" href="/favicon.png" />
         
         {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GA_ID && (
@@ -164,11 +168,38 @@ export default function RootLayout({
             __html: JSON.stringify(structuredData)
           }}
         />
+        
+        {/* Breadcrumb Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Accueil",
+                  "item": "https://www.dsp4-ddm-023dis3-4-g9.fr"
+                }
+              ]
+            })
+          }}
+        />
       </head>
       <body className={`${inter.className} antialiased`}>
+        {/* Skip to Content Link - Accessibility */}
+        <a 
+          href="#main-content" 
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-[#4A7C59] text-white px-4 py-2 rounded-lg z-50 font-medium shadow-lg"
+        >
+          Aller au contenu principal
+        </a>
         <PerformanceOptimizer>
         <AuthProvider>
           {children}
+          <CookieBanner />
         </AuthProvider>
           <PerformanceMonitor />
         </PerformanceOptimizer>
