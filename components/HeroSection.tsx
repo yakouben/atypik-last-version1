@@ -20,7 +20,7 @@ export default function HeroSection({ onReserverClick, onAddPropertyClick, onCon
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [showReCaptchaModal, setShowReCaptchaModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [showSearchWidget, setShowSearchWidget] = useState(false);

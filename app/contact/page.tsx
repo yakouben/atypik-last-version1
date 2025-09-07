@@ -93,8 +93,8 @@ export default function ContactPage() {
               width="100%" 
               height="824" 
               frameBorder="0" 
-              marginHeight="0" 
-              marginWidth="0"
+              marginHeight={0}
+              marginWidth={0}
               className="w-full min-h-[600px] rounded-lg border border-gray-200"
               title="Formulaire de contact AtypikHouse"
             >
