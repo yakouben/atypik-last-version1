@@ -510,7 +510,7 @@ export default function Home() {
                   alt="Logo AtypikHouse" 
                   className="w-20 h-20 object-contain"
                 />
-                <span className="text-xl font-bold">AtypikHouse</span>
+                <span className="hidden sm:inline text-xl font-bold">AtypikHouse</span>
               </div>
               <p className="text-green-100 text-sm leading-relaxed">
                 Découvrez des hébergements insolites et des expériences mémorables en Europe.
