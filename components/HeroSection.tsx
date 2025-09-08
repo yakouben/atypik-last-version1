@@ -235,7 +235,7 @@ export default function HeroSection({ onReserverClick, onAddPropertyClick, onCon
                       alt="Logo AtypikHouse" 
                       className="w-20 h-20 object-contain"
                     />
-                    <span className="text-xl font-bold text-gray-900">AtypikHouse</span>
+                    <span className="hidden sm:inline text-xl font-bold text-gray-900">AtypikHouse</span>
                   </div>
                   
                                       {/* Tablet & Desktop Navigation */}
