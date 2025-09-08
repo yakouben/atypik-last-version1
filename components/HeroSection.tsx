@@ -348,7 +348,7 @@ export default function HeroSection({ onReserverClick, onAddPropertyClick, onCon
                   <br />
                   & glamping
                 </h1>
-                <p className="text-sm sm:text-base text-gray-500 font-medium">Depuis 2023</p>
+                <p className="text-sm sm:text-base text-gray-500 font-medium">Depuis 2025</p>
               </div>
 
               {/* Description */}
