@@ -547,7 +547,7 @@ export default function Home() {
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg">Contact</h3>
                 <div className="space-y-2 text-sm text-green-100">
-                  <p className="hover:text-white transition-colors cursor-pointer">contact@dsp4-ddm-023dis3-4-g9.fr</p>
+                  
                   <p className="hover:text-white transition-colors cursor-pointer">Europe</p>
                                 {/* Social Media Section - Bottom */}
                             <div className="text-center mt-8 mb-8">

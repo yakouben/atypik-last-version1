@@ -254,8 +254,8 @@ export default function HeroSection({ onReserverClick, onAddPropertyClick, onCon
                 
                 {/* Right Side - Search and Actions */}
                 <div className="flex items-center space-x-4 lg:space-x-6">
-                  {/* Global Search Bar */}
-                  <div className="relative search-container">
+                  {/* Global Search Bar - Hidden on small screens */}
+                  <div className="hidden sm:block relative search-container">
                     <button
                       onClick={openSearchWidget}
                       className="search-button w-full sm:w-64 pl-10 pr-4 py-2.5 sm:py-3 rounded-full text-left text-gray-500 transition-all duration-200 flex items-center shadow-sm"
@@ -348,7 +348,7 @@ export default function HeroSection({ onReserverClick, onAddPropertyClick, onCon
                   <br />
                   & glamping
                 </h1>
-                <p className="text-sm sm:text-base text-gray-500 font-medium">Depuis 2023</p>
+                <p className="text-sm sm:text-base text-gray-500 font-medium">Depuis 2025</p>
               </div>
 
               {/* Description */}
