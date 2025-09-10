@@ -168,7 +168,7 @@ export default function GlampingGuestExperience() {
         }
       )
       .subscribe((status, err) => {
-        console.log('📡 [REALTIME] Subscription status Changed:', {
+        console.log('📡 [REALTIME] Subscription status changed:', {
           status,
           error: err,
           timestamp: new Date().toISOString(),
@@ -340,7 +340,7 @@ export default function GlampingGuestExperience() {
         
         // Log individual booking details for debugging
         if (result.data.length > 0) {
-          console.log('📋 [LOAD-BOOKINGS] Current bookings:', result.data.map(b => ({
+          console.log('📋 [LOAD-BOOKINGS] Current bookings:', result.data.map((b: Booking) => ({
             id: b.id,
             status: b.status,
             property: b.properties?.name,
