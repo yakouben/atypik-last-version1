@@ -168,7 +168,7 @@ export default function GlampingGuestExperience() {
         }
       )
       .subscribe((status, err) => {
-        console.log('📡 [REALTIME] Subscription status changed:', {
+        console.log('📡 [REALTIME] Subscription status Changed:', {
           status,
           error: err,
           timestamp: new Date().toISOString(),
