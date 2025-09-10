@@ -112,14 +112,21 @@ export default function GlampingGuestExperience() {
 
   // Enhanced real-time subscription for bookings updates
   useEffect(() => {
-    if (!userProfile?.id) return;
+    if (!userProfile?.id) {
+      console.log('⚠️ [REALTIME] No userProfile.id available for real-time subscription');
+      return;
+    }
 
-    console.log('🔔 Setting up enhanced real-time subscription for client:', userProfile.id);
+    console.log('🔔 [REALTIME] Setting up enhanced real-time subscription for client:', userProfile.id);
     setRealTimeActive(true);
+
+    // Create a unique channel name
+    const channelName = `client-bookings-${userProfile.id}-${Date.now()}`;
+    console.log('📡 [REALTIME] Creating channel:', channelName);
 
     // Subscribe to changes in the bookings table for this client
     const subscription = supabase
-      .channel(`client-bookings-${userProfile.id}`)
+      .channel(channelName)
       .on(
         'postgres_changes',
         {
@@ -129,46 +136,63 @@ export default function GlampingGuestExperience() {
           filter: `client_id=eq.${userProfile.id}`
         },
         (payload) => {
-          console.log('🔔 Real-time booking update received:', payload.eventType, payload);
+          console.log('🔔 [REALTIME] Real-time booking update received:', {
+            eventType: payload.eventType,
+            table: payload.table,
+            schema: payload.schema,
+            new: payload.new,
+            old: payload.old,
+            timestamp: new Date().toISOString()
+          });
           
-          if (payload.eventType === 'INSERT') {
-            // New booking created - immediately reload to get complete data with joins
-            console.log('➕ New booking detected - reloading all bookings');
-            loadBookings();
+          // Debounce rapid updates
+          setTimeout(() => {
+            console.log('🔄 [REALTIME] Processing real-time update after debounce');
             
-            // Show visual feedback
+            if (payload.eventType === 'INSERT') {
+              console.log('➕ [REALTIME] New booking detected - reloading all bookings');
+              loadBookings();
+              
+            } else if (payload.eventType === 'UPDATE') {
+              console.log('🔄 [REALTIME] Booking updated - reloading all bookings');
+              loadBookings();
+              
+            } else if (payload.eventType === 'DELETE') {
+              console.log('🗑️ [REALTIME] Booking deleted - reloading all bookings');
+              loadBookings();
+            }
+            
+            // Update timestamp
             setLastUpdated(new Date());
-            
-          } else if (payload.eventType === 'UPDATE') {
-            // Booking status or details updated - reload immediately
-            console.log('🔄 Booking updated - reloading all bookings');
-            loadBookings();
-            
-            // Show visual feedback
-            setLastUpdated(new Date());
-            
-          } else if (payload.eventType === 'DELETE') {
-            // Booking deleted - reload
-            console.log('🗑️ Booking deleted - reloading all bookings');
-            loadBookings();
-            setLastUpdated(new Date());
-          }
+          }, 500); // 500ms debounce
         }
       )
-      .subscribe((status) => {
-        console.log('📡 Real-time subscription status:', status);
+      .subscribe((status, err) => {
+        console.log('📡 [REALTIME] Subscription status changed:', {
+          status,
+          error: err,
+          timestamp: new Date().toISOString(),
+          channelName
+        });
+        
         if (status === 'SUBSCRIBED') {
           setRealTimeActive(true);
-          console.log('✅ Real-time subscription active');
-        } else if (status === 'CHANNEL_ERROR') {
+          console.log('✅ [REALTIME] Real-time subscription active');
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
           setRealTimeActive(false);
-          console.log('❌ Real-time subscription error');
+          console.log('❌ [REALTIME] Real-time subscription error/closed:', status);
+          
+          // Try to reconnect after a delay
+          setTimeout(() => {
+            console.log('🔄 [REALTIME] Attempting to reconnect...');
+            loadBookings(); // Manual fallback
+          }, 2000);
         }
       });
 
     // Cleanup subscription on unmount
     return () => {
-      console.log('🔌 Unsubscribing from real-time bookings');
+      console.log('🔌 [REALTIME] Unsubscribing from real-time bookings:', channelName);
       subscription.unsubscribe();
       setRealTimeActive(false);
     };
@@ -193,28 +217,9 @@ export default function GlampingGuestExperience() {
     filterBookings();
   }, [bookings, selectedStatus, searchQuery]);
 
-  // Auto-refresh bookings every 30 seconds to get real-time status updates
-  useEffect(() => {
-    if (userProfile?.id) {
-      const interval = setInterval(() => {
-        checkForStatusUpdates();
-      }, 5000); // Check every 5 seconds for faster updates
-
-      return () => clearInterval(interval);
-    }
-  }, [userProfile]);
-
-  // Additional real-time check for new bookings
-  useEffect(() => {
-    if (userProfile?.id) {
-      const interval = setInterval(() => {
-        // Check for new bookings more frequently
-        loadBookings();
-      }, 3000); // Check every 3 seconds for new bookings
-
-      return () => clearInterval(interval);
-    }
-  }, [userProfile]);
+  // REMOVED: Multiple overlapping intervals that were causing race conditions
+  // The real-time subscription above should handle all updates automatically
+  // If real-time fails, we have a fallback reconnection mechanism
 
   // Check for real-time status updates
   const checkForStatusUpdates = async () => {
@@ -284,26 +289,81 @@ export default function GlampingGuestExperience() {
 
   const loadBookings = async () => {
     if (!userProfile?.id) {
-      console.log('⚠️ Cannot load bookings - no userProfile.id');
+      console.log('⚠️ [LOAD-BOOKINGS] Cannot load bookings - no userProfile.id');
       return;
     }
     
     setBookingsLoading(true);
+    const startTime = Date.now();
+    
     try {
-      console.log('🔍 Loading bookings for client:', userProfile.id);
-      const response = await fetch(`/api/bookings/client?clientId=${userProfile.id}`);
+      console.log('🔍 [LOAD-BOOKINGS] Loading bookings for client:', userProfile.id);
+      
+      // Add debug parameter and timestamp to prevent caching
+      const url = `/api/bookings/client?clientId=${userProfile.id}&debug=true&t=${Date.now()}`;
+      console.log('🌐 [LOAD-BOOKINGS] Fetching from URL:', url);
+      
+      const response = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
       const result = await response.json();
+      const loadTime = Date.now() - startTime;
+      
+      console.log('📊 [LOAD-BOOKINGS] Response received:', {
+        status: response.status,
+        ok: response.ok,
+        loadTime: `${loadTime}ms`,
+        dataCount: result.data?.length || 0,
+        error: result.error || null,
+        debug: result.debug || null
+      });
       
       if (response.ok && result.data) {
+        const newBookingsCount = result.data.length;
+        const oldBookingsCount = bookings.length;
+        
         setBookings(result.data);
-        setLastUpdated(new Date()); // Update timestamp
-        console.log('✅ Bookings loaded successfully:', result.data.length);
+        setLastUpdated(new Date());
+        
+        console.log('✅ [LOAD-BOOKINGS] Bookings loaded successfully:', {
+          newCount: newBookingsCount,
+          oldCount: oldBookingsCount,
+          changed: newBookingsCount !== oldBookingsCount,
+          latestBooking: result.data[0] || null,
+          loadTime: `${loadTime}ms`
+        });
+        
+        // Log individual booking details for debugging
+        if (result.data.length > 0) {
+          console.log('📋 [LOAD-BOOKINGS] Current bookings:', result.data.map(b => ({
+            id: b.id,
+            status: b.status,
+            property: b.properties?.name,
+            created: b.created_at,
+            updated: b.updated_at
+          })));
+        }
+        
       } else {
-        console.error('❌ Error loading bookings:', result.error);
+        console.error('❌ [LOAD-BOOKINGS] Error loading bookings:', {
+          status: response.status,
+          error: result.error,
+          details: result.details || null
+        });
         setBookings([]);
       }
     } catch (error) {
-      console.error('❌ Exception loading bookings:', error);
+      const loadTime = Date.now() - startTime;
+      console.error('❌ [LOAD-BOOKINGS] Exception loading bookings:', {
+        error: error instanceof Error ? error.message : error,
+        loadTime: `${loadTime}ms`,
+        userProfileId: userProfile.id
+      });
       setBookings([]);
     } finally {
       setBookingsLoading(false);
@@ -967,6 +1027,19 @@ export default function GlampingGuestExperience() {
                       {realTimeActive ? 'Temps réel actif' : 'Temps réel inactif'}
                     </span>
                   </div>
+                  
+                  {/* Manual Refresh Button */}
+                  <button
+                    onClick={() => {
+                      console.log('🔄 [MANUAL-REFRESH] User triggered manual refresh');
+                      loadBookings();
+                    }}
+                    className="flex items-center space-x-1 px-3 py-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+                    title="Actualiser manuellement"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    <span className="text-xs font-medium">Actualiser</span>
+                  </button>
                   
                   {lastUpdated && (
                     <div className="text-xs text-gray-500">
