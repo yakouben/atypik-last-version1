@@ -64,6 +64,7 @@ interface Booking {
   email_or_phone?: string;
   travel_type?: string;
   created_at: string;
+  updated_at?: string; // Added missing updated_at property
   properties: {
     name: string;
     location: string;
