@@ -554,7 +554,7 @@ export default function Home() {
                         <div className="flex justify-center gap-6">
                           <a 
                             href="https://facebook.com" 
-                            target="_blank" 
+                            target="https://www.facebook.com/share/17aAevMn8C/?mibextid=wwXIfr" 
                             rel="noopener noreferrer"
                             className="bg-[#4A7C59] hover:bg-[#2C3E37] text-white p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg"
                             aria-label="Suivez-nous sur Facebook"
@@ -563,7 +563,7 @@ export default function Home() {
                           </a>
                           <a 
                             href="https://instagram.com" 
-                            target="_blank" 
+                            target="https://www.instagram.com/atypikhouseofficiel?igsh=MXAxOHFtbDB1cnR2eQ%3D%3D&utm_source=qr" 
                             rel="noopener noreferrer"
                             className="bg-[#4A7C59] hover:bg-[#2C3E37] text-white p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg"
                             aria-label="Suivez-nous sur Instagram"
