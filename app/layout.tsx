@@ -120,8 +120,8 @@ export default function RootLayout({
       "availableLanguage": "French"
     },
     "sameAs": [
-      "https://facebook.com/dsp4-ddm-023dis3-4-g9",
-      "https://instagram.com/dsp4-ddm-023dis3-4-g9"
+      "https://www.facebook.com/profile.php?id=61580537802035",
+      "https://www.instagram.com/atypikhouseofficiel"
     ],
     "areaServed": [
       {
