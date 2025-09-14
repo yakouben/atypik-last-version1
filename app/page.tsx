@@ -553,8 +553,8 @@ export default function Home() {
                             <div className="text-center mt-8 mb-8">
                         <div className="flex justify-center gap-6">
                           <a 
-                            href="https://facebook.com" 
-                            target="https://www.facebook.com/share/17aAevMn8C/?mibextid=wwXIfr" 
+                            href="https://www.facebook.com/share/17aAevMn8C/?mibextid=wwXIfr" 
+                            target="_blank" 
                             rel="noopener noreferrer"
                             className="bg-[#4A7C59] hover:bg-[#2C3E37] text-white p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg"
                             aria-label="Suivez-nous sur Facebook"
@@ -562,8 +562,8 @@ export default function Home() {
                             <Facebook size={24} aria-hidden="true" />
                           </a>
                           <a 
-                            href="https://instagram.com" 
-                            target="https://www.instagram.com/atypikhouseofficiel?igsh=MXAxOHFtbDB1cnR2eQ%3D%3D&utm_source=qr" 
+                            href="https://www.instagram.com/atypikhouseofficiel?igsh=MXAxOHFtbDB1cnR2eQ%3D%3D&utm_source=qr " 
+                            target="_blank" 
                             rel="noopener noreferrer"
                             className="bg-[#4A7C59] hover:bg-[#2C3E37] text-white p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg"
                             aria-label="Suivez-nous sur Instagram"
