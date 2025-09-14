@@ -552,7 +552,7 @@ export default function Home() {
                                 {/* Social Media Section - Bottom */}
                             <div className="text-center mt-8 mb-8">
                         <div className="flex justify-center gap-6">
-                          <a 
+                         <a 
                             href="https://www.facebook.com/profile.php?id=61580537802035" 
                             target="_blank" 
                             rel="noopener noreferrer"
@@ -562,7 +562,7 @@ export default function Home() {
                             <Facebook size={24} aria-hidden="true" />
                           </a>
                           <a 
-                            href="https://www.instagram.com/atypikhouseofficiel " 
+                            href="https://www.instagram.com/atypikhouseofficiel" 
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="bg-[#4A7C59] hover:bg-[#2C3E37] text-white p-3 rounded-full transition-all duration-300 hover:scale-110 shadow-lg"
